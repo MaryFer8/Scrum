@@ -1,0 +1,129 @@
+from kivy.app import App
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.label import Label
+from kivy.uix.textinput import TextInput
+from kivy.uix.button import Button
+from kivy.uix.popup import Popup
+from datetime import datetime, timedelta
+
+class TaskManager(BoxLayout):
+    def _init_(self, **kwargs):
+        super(TaskManager, self)._init_(**kwargs)
+        self.orientation = 'vertical'
+
+        self.listaTareas = []
+
+        self.label = Label(text='** Bienvenido a su Lista de tareas **')
+        self.add_widget(self.label)
+
+        self.btn_ver_tareas = Button(text='Ver tareas pendientes')
+        self.btn_ver_tareas.bind(on_release=self.mostrarTareas)
+        self.add_widget(self.btn_ver_tareas)
+
+        self.btn_agregar_tarea = Button(text='Agregar nueva tarea')
+        self.btn_agregar_tarea.bind(on_release=self.crearTarea)
+        self.add_widget(self.btn_agregar_tarea)
+
+        self.btn_editar_tarea = Button(text='Editar tarea')
+        self.btn_editar_tarea.bind(on_release=self.editarTarea)
+        self.add_widget(self.btn_editar_tarea)
+
+        self.btn_eliminar_tarea = Button(text='Eliminar tarea')
+        self.btn_eliminar_tarea.bind(on_release=self.eliminarTarea)
+        self.add_widget(self.btn_eliminar_tarea)
+
+        self.btn_asignar_prioridad = Button(text='Asignar prioridad')
+        self.btn_asignar_prioridad.bind(on_release=self.asignarPrioridad)
+        self.add_widget(self.btn_asignar_prioridad)
+
+        self.btn_establecer_recordatorio = Button(text='Establecer recordatorio')
+        self.btn_establecer_recordatorio.bind(on_release=self.establecerRecordatorio)
+        self.add_widget(self.btn_establecer_recordatorio)
+
+        self.btn_marcar_completada = Button(text='Marcar tarea como completada')
+        self.btn_marcar_completada.bind(on_release=self.marcarCompletada)
+        self.add_widget(self.btn_marcar_completada)
+
+    def crearTarea(self, instance):
+        content = BoxLayout(orientation='vertical')
+        self.popup = Popup(title='Nueva Tarea', content=content, size_hint=(0.8, 0.8))
+
+        self.titulo = TextInput(hint_text='Título')
+        content.add_widget(self.titulo)
+
+        self.descripcion = TextInput(hint_text='Descripción')
+        content.add_widget(self.descripcion)
+
+        self.estado = TextInput(hint_text='Estado de la tarea')
+        content.add_widget(self.estado)
+
+        self.fechaFinalizacion = TextInput(hint_text='Fecha de entrega (aaaa-mm-dd)')
+        content.add_widget(self.fechaFinalizacion)
+
+        self.nota = TextInput(hint_text='Nota')
+        content.add_widget(self.nota)
+
+        btn_save = Button(text='Guardar')
+        btn_save.bind(on_release=self.saveTarea)
+        content.add_widget(btn_save)
+
+        self.popup.open()
+
+    def saveTarea(self, instance):
+        nuevaTarea = {
+            'Título': self.titulo.text,
+            'Descripción': self.descripcion.text,
+            'Fecha de creación': datetime.now().date(),
+            'Fecha de finalización': self.fechaFinalizacion.text,
+            'Estado': self.estado.text,
+            'Nota': self.nota.text,
+            'Prioridad': None,
+            'Recordatorio': None,
+            'Completada': False
+        }
+        self.listaTareas.append(nuevaTarea)
+        self.popup.dismiss()
+
+    def mostrarTareas(self, instance):
+        content = BoxLayout(orientation='vertical')
+        self.popup = Popup(title='Tareas Pendientes', content=content, size_hint=(0.8, 0.8))
+
+        if len(self.listaTareas) > 0:
+            for i, tarea in enumerate(self.listaTareas, start=1):
+                tarea_label = Label(text=f"Tarea {i}: {tarea['Título']} - {tarea['Estado']}")
+                content.add_widget(tarea_label)
+        else:
+            content.add_widget(Label(text="Parece que no tienes tareas pendientes"))
+
+        btn_close = Button(text='Cerrar')
+        btn_close.bind(on_release=self.popup.dismiss)
+        content.add_widget(btn_close)
+
+        self.popup.open()
+
+    def editarTarea(self, instance):
+        # Implementa lógica para editar tarea
+        pass
+
+    def eliminarTarea(self, instance):
+        # Implementa lógica para eliminar tarea
+        pass
+
+    def asignarPrioridad(self, instance):
+        # Implementa lógica para asignar prioridad a la tarea
+        pass
+
+    def establecerRecordatorio(self, instance):
+        # Implementa lógica para establecer recordatorio para la tarea
+        pass
+
+    def marcarCompletada(self, instance):
+        # Implementa lógica para marcar la tarea como completada
+        pass
+
+class TaskApp(App):
+    def build(self):
+        return TaskManager()
+
+if _name_ == '_main_':
+    TaskApp().run()
